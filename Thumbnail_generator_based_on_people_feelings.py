@@ -1,34 +1,51 @@
 import cv2
 import numpy as np
+import mediapipe as mp
 from decord import VideoReader
-from decord import cpu,gpu
-import face_alignment
-import torch
+from decord import cpu
 from PIL import Image
 import os
 import concurrent.futures
+from ultralytics import YOLO
 
-## TODO: need to find a robust way to eliminate the frames that are not needed from the video
+
+
+mp_face_detection = mp.solutions.face_detection
+
+def detect_faces_mediapipe(image_path, min_detection_confidence=0.7):
+    image = cv2.imread(image_path)
+    if image is None:
+        return False
+    with mp_face_detection.FaceDetection(
+        model_selection=1,
+        min_detection_confidence=min_detection_confidence
+    ) as face_detection:
+        results = face_detection.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+        return results.detections is not None and len(results.detections) > 0
+def detect_face_yolov8(image_path, model, confidence_threshold=0.25):
+    results = model(image_path)
+    for box in results[0].boxes:
+        if box.conf[0] >= confidence_threshold:
+            return True
+    return False
 
 def detect_faces(image_directory, save_directory=None):
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    fa = face_alignment.FaceAlignment(face_alignment.LandmarksType.TWO_D, device=device)
     if save_directory and not os.path.exists(save_directory):
         os.makedirs(save_directory)
     image_files = os.listdir(image_directory)
-    for image_file in image_files:
+
+    def process_image(image_file):
         image_path = os.path.join(image_directory, image_file)
         try:
-            landmarks = fa.get_landmarks(image_path)
-            if landmarks is None or len(landmarks) == 0:
-                print(f"No faces detected in {image_path}")
-                continue
+            if not detect_faces_mediapipe(image_path):
+                return
             if save_directory:
                 img = Image.open(image_path)
                 img.save(os.path.join(save_directory, image_file))  
         except Exception as e:
             print(f"Error processing {image_path}: {e}")
-            continue   
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        executor.map(process_image, image_files)
 def save_frame(frame, save_path, overwrite):
     if not os.path.exists(save_path) or overwrite:
         cv2.imwrite(save_path, cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
@@ -73,13 +90,6 @@ def extract_frames_one_per_second(video_path, frames_dir, overwrite=False):
 
 
 def video_to_frames_one_per_second(video_path, frames_dir, overwrite=False):
-    """
-    Extracts one frame per second from a video
-    :param video_path: path to the video
-    :param frames_dir: directory to save the frames
-    :param overwrite: overwrite frames if they exist?
-    :return: path to the directory where the frames were saved
-    """
     video_path = os.path.normpath(video_path)
     frames_dir = os.path.normpath(frames_dir)
     video_dir, video_filename = os.path.split(video_path)
@@ -94,4 +104,5 @@ def video_to_frames_one_per_second(video_path, frames_dir, overwrite=False):
 
 
 if __name__ == '__main__':
-    video_to_frames_one_per_second(video_path='The Present.mp4', frames_dir='test_frames', overwrite=True)
+    #video_to_frames_one_per_second(video_path='The Present.mp4', frames_dir='test_frames', overwrite=True)
+    detect_faces(image_directory='test_frames',save_directory='test_frames_faces')
