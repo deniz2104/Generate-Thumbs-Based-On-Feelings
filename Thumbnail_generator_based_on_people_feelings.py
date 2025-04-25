@@ -1,16 +1,60 @@
 import cv2
 import numpy as np
 import mediapipe as mp
+import torch
 from decord import VideoReader
 from decord import cpu
 from PIL import Image
 import os
 import concurrent.futures
 from ultralytics import YOLO
+import shutil
+from sklearn.model_selection import train_test_split
+import tensorflow as tf
 
-
-
+torch.cuda.empty_cache()
 mp_face_detection = mp.solutions.face_detection
+
+
+
+def prepare_dataset():
+    image_dir = "images/"
+    label_dir = "labels/"
+    os.makedirs("dataset/images/train", exist_ok=True)
+    os.makedirs("dataset/images/val", exist_ok=True)
+    os.makedirs("dataset/labels/train", exist_ok=True)
+    os.makedirs("dataset/labels/val", exist_ok=True)
+
+    images = sorted([f for f in os.listdir(image_dir) if f.endswith(".jpg")])
+    labels = sorted([f for f in os.listdir(label_dir) if f.endswith(".txt")])
+    assert len(images) == len(labels), f"Mismatch: {len(images)} images and {len(labels)} labels!"
+
+    train_images, val_images, train_labels, val_labels = train_test_split(
+        images, labels, test_size=0.2, random_state=42
+    )
+
+    for img, lbl in zip(train_images, train_labels):
+        shutil.copy(os.path.join(image_dir, img), "dataset/images/train")
+        shutil.copy(os.path.join(label_dir, lbl), "dataset/labels/train")
+
+    for img, lbl in zip(val_images, val_labels):
+        shutil.copy(os.path.join(image_dir, img), "dataset/images/val")
+        shutil.copy(os.path.join(label_dir, lbl), "dataset/labels/val")
+
+    print("Dataset has been split into train and validation sets.")
+
+    data_yaml = """
+    train: dataset/images/train
+    val: dataset/images/val
+    nc: 1
+    names: ['face']
+    """
+
+    with open("widerface_yolo.yaml", "w") as f:
+        f.write(data_yaml)
+
+    print("Data configuration file 'widerface_yolo.yaml' created.")
+    return "widerface_yolo.yaml"
 
 def detect_faces_mediapipe(image_path, min_detection_confidence=0.7):
     image = cv2.imread(image_path)
@@ -22,12 +66,14 @@ def detect_faces_mediapipe(image_path, min_detection_confidence=0.7):
     ) as face_detection:
         results = face_detection.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
         return results.detections is not None and len(results.detections) > 0
-def detect_face_yolov8(image_path, model, confidence_threshold=0.25):
-    results = model(image_path)
-    for box in results[0].boxes:
-        if box.conf[0] >= confidence_threshold:
-            return True
-    return False
+
+def get_device():
+    if torch.cuda.is_available():
+        return "0"  
+    elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+        return "mps"  
+    else:
+        return "cpu"
 
 def detect_faces(image_directory, save_directory=None):
     if save_directory and not os.path.exists(save_directory):
@@ -46,11 +92,42 @@ def detect_faces(image_directory, save_directory=None):
             print(f"Error processing {image_path}: {e}")
     with concurrent.futures.ThreadPoolExecutor() as executor:
         executor.map(process_image, image_files)
+
+def train_yolo_model(data_yaml,img_size=420,batch_size=16,epochs=20):
+    device = get_device()
+    os.makedirs("widerface_yolo",exist_ok=True)
+    model = YOLO("yolov8n.pt")
+    results = model.train(
+        data=data_yaml,
+        imgsz=img_size,
+        batch=batch_size,
+        epochs=epochs,
+        device=device,
+        project="widerface_yolo",
+        workers=0,
+        name="yolo_model",
+        exist_ok=True
+    )
+    weights_path = os.path.join("widerface_yolo", "yolo_model", "weights", "best.pt")
+    return weights_path    
 def save_frame(frame, save_path, overwrite):
     if not os.path.exists(save_path) or overwrite:
         cv2.imwrite(save_path, cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
         return 1
     return 0
+
+def detect_faces_yolo(weight_path, image_directory, save_directory=None, conf_thresh=0.7):
+    model = YOLO(weight_path)
+    if save_directory and not os.path.exists(save_directory):
+        os.makedirs(save_directory)
+    image_files = [f for f in os.listdir(image_directory) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
+    for image in image_files:
+        image_path = os.path.join(image_directory, image)
+        results = model(image_path, conf=conf_thresh)[0]
+        if len(results.boxes) > 0:
+            img = cv2.imread(image_path)
+            save_path = os.path.join(save_directory, image)
+            cv2.imwrite(save_path, img)
 
 def extract_frames_one_per_second(video_path, frames_dir, overwrite=False):
     
@@ -106,3 +183,5 @@ def video_to_frames_one_per_second(video_path, frames_dir, overwrite=False):
 if __name__ == '__main__':
     #video_to_frames_one_per_second(video_path='The Present.mp4', frames_dir='test_frames', overwrite=True)
     detect_faces(image_directory='test_frames',save_directory='test_frames_faces')
+    #weight_path = train_yolo_model(data_yaml='widerface_yolo.yaml', img_size=320, batch_size=16, epochs=5)
+    detect_faces_yolo(weight_path="widerface_yolo/yolo_model/weights/best.pt", image_directory='test_frames_faces', save_directory='test_frames_faces_yolo',conf_thresh=0.6)
