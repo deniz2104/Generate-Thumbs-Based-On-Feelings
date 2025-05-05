@@ -20,4 +20,5 @@ if __name__ == '__main__':
     #    ear_threshold=0.21  # Lower for animated characters
     #    save_directory='final_frames_closed_eyes
     #)
-    detect_most_present_face(image_directory='final_frames')
+    #detect_most_present_face(image_directory='final_frames')
+    pass
