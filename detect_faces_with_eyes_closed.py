@@ -32,15 +32,15 @@ def detect_closed_eyes(image_path, ear_threshold=0.21):
         results = face_mesh.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
         
         if not results.multi_face_landmarks:
-            return False
+            return True 
 
         for face_landmarks in results.multi_face_landmarks:
             for eye_indices in FACE_MESH_EYES:
                 eye_points = np.array([(face_landmarks.landmark[i].x * image.shape[1],
-                                      face_landmarks.landmark[i].y * image.shape[0])
-                                     for i in eye_indices])
+                                    face_landmarks.landmark[i].y * image.shape[0])
+                                    for i in eye_indices])
                 ear = calculate_ear(eye_points)
-            if ear < ear_threshold:
+            if ear < ear_threshold and ear:
                 return True
         return False
 
@@ -54,6 +54,7 @@ def eliminate_closed_eyes(image_directory, save_directory=None, ear_threshold=0.
     for image_file in image_files:
         image_path = os.path.join(image_directory, image_file)
         img=cv2.imread(image_path)
+        print(image_path)
         if not detect_closed_eyes(image_path, ear_threshold=ear_threshold):
             if save_directory:
                 img = Image.open(image_path)
