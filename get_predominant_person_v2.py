@@ -1,7 +1,9 @@
 import mediapipe as mp
 import cv2
 import os
+from PIL import Image
 import numpy as np
+
 mp_face_mesh = mp.solutions.face_mesh
 
 def extract_face_landmarks(image_path):
@@ -29,13 +31,19 @@ def calculate_landmark_distance(landmarks1, landmarks2):
     distance = np.mean(np.linalg.norm(landmarks1 - landmarks2,axis=1))
     return distance
 
-def detect_most_present_face(image_directory):
+def detect_most_present_face(image_directory,save_directory=None):
+    if save_directory and not os.path.exists(save_directory):
+        os.makedirs(save_directory)
     image_files = [f for f in os.listdir(image_directory) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
-    if not image_files:
-        return None
     first_landmark = extract_face_landmarks(os.path.join(image_directory, image_files[0]))
     for image in image_files:
         image_path = os.path.join(image_directory, image)
+        img=cv2.imread(image_path)
         landmarks = extract_face_landmarks(image_path)
         distance = calculate_landmark_distance(first_landmark, landmarks)
-        ## e ok,iau varianta cu infinit si aia e tot ce mi trebuie,maine asamblez totul si trec la recunostoarea de emotii
+        if distance < 0.3:
+            if save_directory:
+                img = Image.open(image_path)
+                img.save(os.path.join(save_directory, image))
+
+
