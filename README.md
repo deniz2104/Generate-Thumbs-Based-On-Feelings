@@ -22,12 +22,12 @@ flowchart LR
     F-->P{Eliminare poze fara fata folosind MediaPipe}
     P-->D[Detectare fețe<br/>YOLOv8‑n]
     D-->E[Crop fețe]
-    E --> G [Detectie ploze blurry folosind Laplacian]
-    G --> H [Detectie poze blurry folosind FFT]
-    H --> I [Detectie poze blurry folosind FFT personalizat]
-    I --> J [Detectie poze care nu contin ochii inchisi]
-    J --> K [Clasificare emoție<br/>CNN ‑ FER2013]
-    K --> L [Selectare cadre „best hit”]
+    E --> G[Detectie ploze blurry folosind Laplacian]
+    G --> H[Detectie poze blurry folosind FFT]
+    H --> I[Detectie poze blurry folosind FFT personalizat]
+    I --> J[Detectie poze care nu contin ochii inchisi]
+    J --> K[Clasificare emoție<br/>CNN ‑ FER2013]
+    K --> L[Selectare cadre „best hit”]
 ```
 
 ---
