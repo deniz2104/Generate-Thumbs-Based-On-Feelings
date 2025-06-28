@@ -52,7 +52,7 @@ flowchart LR
 Python · OpenCV · Ultralytics YOLOv8 · TensorFlow/Keras · Torch · Scikit-learn · Mediapipe · Decord · Cuda
 ```
 
----
+Vezi documentatie atasata
 
 ## 🐞 Provocări
 
