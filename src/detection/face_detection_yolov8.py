@@ -2,7 +2,9 @@ import torch
 import os
 from ultralytics import YOLO
 import cv2
+
 torch.cuda.empty_cache()
+
 def get_device():
     if torch.cuda.is_available():
         return "0"  
@@ -14,20 +16,20 @@ def get_device():
 def train_yolo_model(data_yaml,img_size=420,batch_size=16,epochs=20):
 
     device = get_device()
-    os.makedirs("widerface_yolo",exist_ok=True)
-    model = YOLO("yolov8n.pt")
+    os.makedirs("data/widerface_yolo",exist_ok=True)
+    model = YOLO("models/yolov8n.pt")
     results = model.train(
         data=data_yaml,
         imgsz=img_size,
         batch=batch_size,
         epochs=epochs,
         device=device,
-        project="widerface_yolo",
+        project="data/widerface_yolo",
         workers=0,
         name="yolo_model",
         exist_ok=True
     )
-    weights_path = os.path.join("widerface_yolo", "yolo_model", "weights", "best.pt")
+    weights_path = os.path.join("data/widerface_yolo", "yolo_model", "weights", "best.pt")
     return weights_path    
 
 def detect_faces_yolo(weight_path, image_directory, save_directory=None, conf_thresh=0.7):

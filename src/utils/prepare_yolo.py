@@ -35,8 +35,8 @@ def prepare_dataset():
     names: ['face']
     """
 
-    with open("widerface_yolo.yaml", "w") as f:
+    with open("config/widerface_yolo.yaml", "w") as f:
         f.write(data_yaml)
 
-    print("Data configuration file 'widerface_yolo.yaml' created.")
-    return "widerface_yolo.yaml"
+    print("Data configuration file 'config/widerface_yolo.yaml' created.")
+    return "config/widerface_yolo.yaml"

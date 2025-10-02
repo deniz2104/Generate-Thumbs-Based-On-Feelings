@@ -6,7 +6,8 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, BatchNormalization, Dropout, Flatten, Dense
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
-from data_augmentation import  *
+from src.training.data_augmentation import *
+
 df=pd.read_csv("fer2013.csv")
 image_size=(48,48)
 pixels=df["pixels"].tolist()
@@ -76,4 +77,4 @@ score=model.evaluate(test_faces, test_emotions,verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1]*100)
 
-model.save("fer_model.h5")
+model.save("models/emotion_recognition.h5")

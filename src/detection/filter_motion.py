@@ -2,13 +2,14 @@ import os
 from ultralytics import YOLO
 from PIL import Image
 import cv2
-from detect_faces_having_motion_with_fft import *
-from detect_faces_having_motion_with_laplacian import *
-from detect_faces_having_motion_with_laplacian_with_kernel import *
+from src.detection.motion_detection_fft import *
+from src.detection.motion_detection_laplacian import *
+from src.detection.motion_detection_laplacian_kernel import *
+
 def eliminate_photos_with_motion(image_directory, fft_threshold=140, radius=60, save_directory=None):
     if save_directory and not os.path.exists(save_directory):
         os.makedirs(save_directory)
-    model = YOLO("widerface_yolo/yolo_model/weights/best.pt", verbose=False)
+    model = YOLO("data/widerface_yolo/yolo_model/weights/best.pt", verbose=False)
     image_files = [f for f in os.listdir(image_directory) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
     
     for image in image_files:

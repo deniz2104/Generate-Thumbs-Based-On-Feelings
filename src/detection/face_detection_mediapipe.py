@@ -3,6 +3,7 @@ import cv2
 import concurrent.futures
 import os
 from PIL import Image
+
 mp_face_detection = mp.solutions.face_detection
 
 def detect_faces_mediapipe(image_path, min_detection_confidence=0.7):
@@ -15,6 +16,7 @@ def detect_faces_mediapipe(image_path, min_detection_confidence=0.7):
     ) as face_detection:
         results = face_detection.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
         return results.detections is not None and len(results.detections) > 0
+    
 def detect_faces(image_directory, save_directory=None):
     if save_directory and not os.path.exists(save_directory):
         os.makedirs(save_directory)

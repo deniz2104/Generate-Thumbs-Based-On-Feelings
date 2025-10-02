@@ -2,9 +2,9 @@ import cv2
 from tensorflow.keras.models import load_model
 from ultralytics import YOLO
 import os
-from detect_faces_having_motion_with_fft import get_face_boxxes, crop_face
+from detection.motion_detection_fft import get_face_boxxes, crop_face
 
-my_model=load_model("fer_model.h5",compile=False)
+my_model = load_model("models/emotion_recognition.h5", compile=False)
 width=48
 height=48
 labels=['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
@@ -46,7 +46,7 @@ def classify_face_emotion(image_path, model, save_dir='emotions'):
 def classify_faces_in_directory(image_directory, save_dir='emotions'):
     setup_emotion_directories(save_dir)
     
-    model = YOLO("widerface_yolo/yolo_model/weights/best.pt", verbose=False)
+    model = YOLO("data/widerface_yolo/yolo_model/weights/best.pt", verbose=False)
     image_files = [f for f in os.listdir(image_directory) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
     
     for image in image_files:
