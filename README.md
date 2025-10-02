@@ -33,17 +33,13 @@ flowchart LR
 ---
 
 ## 🛠️ Instrumente & Date
-
 | Componentă              | Alegere                 | De ce?                                                                                                                              |
-| ----------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------|
-| **Video sursă**         | Video animat            | Expresii stilizate ⇒ caz de test greu. Dacă reușește aici, pe fețe reale va merge și mai bine.                                    
-|
-| **Detector fețe**       | `yolov8n.pt`            | 3 M param. ⇒ rulează pe CPU suficient pentru o singură clasă; facut pentru a elimina falsurile pozitive si pentru a capta fetele. |
-| **Dataset detector**    | **WIDER FACE**          | +30 K imagini, diversitate mare.                                                                                                    |
-| **Clasificator emoții** | CNN from scratch | Simplu si straighforward, antrenare pe **FER‑2013**. Dezavantaje: imagini mici, zgomotoase, > dar augmentarea + fine‑tuning compensează.                      |
-                                                                      |
+| ----------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **Video sursă**         | Video animat            | Expresii stilizate ⇒ caz de test greu. Dacă reușește aici, pe fețe reale va merge și mai bine.                                       |
+| **Detector fețe**       | `yolov8n.pt`            | 3 M param. ⇒ rulează pe CPU suficient pentru o singură clasă; făcut pentru a elimina falsurile pozitive și pentru a capta fețele.   |
+| **Dataset detector**    | **WIDER FACE**          | +30 K imagini, diversitate mare.                                                                                                    |
+| **Clasificator emoții** | CNN from scratch        | Simplu și straightforward, antrenare pe **FER-2013**. Dezavantaje: imagini mici, zgomotoase, dar augmentarea + fine-tuning compensează. |
 
----
 
 ## ⚙️ Implementare (pe scurt)
 
