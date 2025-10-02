@@ -27,7 +27,7 @@ flowchart LR
     H --> I[Detectie poze blurry folosind FFT personalizat]
     I --> J[Detectie poze care nu contin ochii inchisi]
     J --> K[Clasificare emoție<br/>CNN ‑ FER2013]
-    K --> L[Selectare cadre „best hit”]
+    K --> L[Selectare cadre]
 ```
 
 ---
@@ -35,12 +35,13 @@ flowchart LR
 ## 🛠️ Instrumente & Date
 
 | Componentă              | Alegere                 | De ce?                                                                                                                              |
-| ----------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| **Video sursă**         | Trailer animat 🎞️       | Expresii stilizate ⇒ caz de test greu. Dacă reușește aici, pe fețe reale va merge și mai bine.                                      |
-| **Detector fețe**       | `yolov8n.pt`            | 3 M param. ⇒ rulează pe CPU/edge, suficient pentru o singură clasă; facut pentru a elimina falsurile pozitive si de a capta fetele. |
+| ----------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------|
+| **Video sursă**         | Video animat            | Expresii stilizate ⇒ caz de test greu. Dacă reușește aici, pe fețe reale va merge și mai bine.                                    
+|
+| **Detector fețe**       | `yolov8n.pt`            | 3 M param. ⇒ rulează pe CPU suficient pentru o singură clasă; facut pentru a elimina falsurile pozitive si pentru a capta fetele. |
 | **Dataset detector**    | **WIDER FACE**          | +30 K imagini, diversitate mare.                                                                                                    |
-| **Clasificator emoții** | CNN custom, input 48×48 | Pornit de la **FER‑2013**. Dezavantaje: imagini mici, zgomotoase, > dar augmentarea + fine‑tuning compensează.                      |
-| **Config YAML**         | `widerface_yolo.yaml`   | Leagă directoarele _train/val_, `nc=1`, `names=['face']`.                                                                           |
+| **Clasificator emoții** | CNN from scratch | Simplu si straighforward, antrenare pe **FER‑2013**. Dezavantaje: imagini mici, zgomotoase, > dar augmentarea + fine‑tuning compensează.                      |
+                                                                      |
 
 ---
 
