@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+
 def get_face_boxxes(image_path, model, conf_thresh=0.7):
     image = cv2.imread(image_path)
     results = model.predict(image, conf=conf_thresh,verbose=False)[0]
