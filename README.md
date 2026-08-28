@@ -42,7 +42,7 @@ cd Generate-Thumbnails-Based-On-Feelings
 
 # 2. Creează un mediu virtual și instalează dependințele
 python -m venv venv
-source venv/bin/activate # Windows: venv\Scripts\activate
+source venv/bin/activate      # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # 3. Rulează pipeline-ul complet
@@ -55,20 +55,20 @@ Pipeline-ul citește video-ul `The Present.mp4` și populează treptat folderele
 
 ```text
 .
-├── config/ # Configurări dataset (ex: widerface_yolo.yaml)
+├── config/                        # Configurări dataset (ex: widerface_yolo.yaml)
 ├── docs/
-│ └── documentation.pdf # Documentație tehnică detaliată
+│   └── documentation.pdf          # Documentație tehnică detaliată
 ├── models/
-│ ├── yolov8n.pt # Model YOLOv8 pre-antrenat (bază)
-│ └── emotion_recognition.h5 # CNN antrenat pe FER-2013
+│   ├── yolov8n.pt                 # Model YOLOv8 pre-antrenat (bază)
+│   └── emotion_recognition.h5     # CNN antrenat pe FER-2013
 ├── src/
-│ ├── main.py # Punct de intrare, rulează pipeline-ul complet
-│ ├── predict_emotions.py # Clasificare emoții și triere pe foldere
-│ ├── detection/ # Detecție fețe, ochi închiși, blur/motion
-│ ├── training/ # Augmentare date și antrenare CNN emoții
-│ └── utils/ # Extragere cadre, pregătire YOLO, selectare persoană principală
-├── data/ # Cadre extrase, dataset YOLO, rezultate finale pe emoții
-├── output/ # Rezultate intermediare ale fiecărei etape de filtrare
+│   ├── main.py                    # Punct de intrare, rulează pipeline-ul complet
+│   ├── predict_emotions.py        # Clasificare emoții și triere pe foldere
+│   ├── detection/                 # Detecție fețe, ochi închiși, blur/motion
+│   ├── training/                  # Augmentare date și antrenare CNN emoții
+│   └── utils/                     # Extragere cadre, pregătire YOLO, selectare persoană principală
+├── data/                           # Cadre extrase, dataset YOLO, rezultate finale pe emoții
+├── output/                         # Rezultate intermediare ale fiecărei etape de filtrare
 └── requirements.txt
 ```
 
