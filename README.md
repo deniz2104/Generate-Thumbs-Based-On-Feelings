@@ -17,7 +17,7 @@
 ## Motivație
 
 - **Public-țintă:** creatori aflați la început de drum, fără buget pentru design grafic.
-- **De ce thumbnail-ul?** Miniatura este primul contact vizual — decide 70-90% din rata de click.
+- **De ce thumbnail-ul?** Miniatura este primul contact vizual - decide 70-90% din rata de click.
 - **Economisire timp & bani:** automatizează extragerea și filtrarea emoțiilor în loc să plătești editări manuale.
 
 ## Stack tehnic & date
@@ -42,7 +42,7 @@ cd Generate-Thumbnails-Based-On-Feelings
 
 # 2. Creează un mediu virtual și instalează dependințele
 python -m venv venv
-source venv/bin/activate      # Windows: venv\Scripts\activate
+source venv/bin/activate # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # 3. Rulează pipeline-ul complet
@@ -55,20 +55,20 @@ Pipeline-ul citește video-ul `The Present.mp4` și populează treptat folderele
 
 ```text
 .
-├── config/                        # Configurări dataset (ex: widerface_yolo.yaml)
+├── config/ # Configurări dataset (ex: widerface_yolo.yaml)
 ├── docs/
-│   └── documentation.pdf          # Documentație tehnică detaliată
+│ └── documentation.pdf # Documentație tehnică detaliată
 ├── models/
-│   ├── yolov8n.pt                 # Model YOLOv8 pre-antrenat (bază)
-│   └── emotion_recognition.h5     # CNN antrenat pe FER-2013
+│ ├── yolov8n.pt # Model YOLOv8 pre-antrenat (bază)
+│ └── emotion_recognition.h5 # CNN antrenat pe FER-2013
 ├── src/
-│   ├── main.py                    # Punct de intrare, rulează pipeline-ul complet
-│   ├── predict_emotions.py        # Clasificare emoții și triere pe foldere
-│   ├── detection/                 # Detecție fețe, ochi închiși, blur/motion
-│   ├── training/                  # Augmentare date și antrenare CNN emoții
-│   └── utils/                     # Extragere cadre, pregătire YOLO, selectare persoană principală
-├── data/                           # Cadre extrase, dataset YOLO, rezultate finale pe emoții
-├── output/                         # Rezultate intermediare ale fiecărei etape de filtrare
+│ ├── main.py # Punct de intrare, rulează pipeline-ul complet
+│ ├── predict_emotions.py # Clasificare emoții și triere pe foldere
+│ ├── detection/ # Detecție fețe, ochi închiși, blur/motion
+│ ├── training/ # Augmentare date și antrenare CNN emoții
+│ └── utils/ # Extragere cadre, pregătire YOLO, selectare persoană principală
+├── data/ # Cadre extrase, dataset YOLO, rezultate finale pe emoții
+├── output/ # Rezultate intermediare ale fiecărei etape de filtrare
 └── requirements.txt
 ```
 
@@ -91,18 +91,18 @@ Pipeline-ul complet, cu toți pașii înlănțuiți, este definit în `src/main.
 
 ## Structura fișierelor de output
 
-- `data/test_frames/` — cadre extrase, 1/s
-- `output/test_frames_faces/` — cadre cu cel puțin o față (MediaPipe)
-- `output/test_frames_faces_yolo/` — cadre adnotate cu bounding box-uri (YOLO)
-- `output/test_frames_without_closed_eyes/` — fără ochi închiși
-- `output/test_frames_without_motion/` — fără blur/motion
-- `output/final_frames/` — cadre finale, persoana principală
-- `data/emotions/<Emoție>/` — triere finală după emoție
+- `data/test_frames/` - cadre extrase, 1/s
+- `output/test_frames_faces/` - cadre cu cel puțin o față (MediaPipe)
+- `output/test_frames_faces_yolo/` - cadre adnotate cu bounding box-uri (YOLO)
+- `output/test_frames_without_closed_eyes/` - fără ochi închiși
+- `output/test_frames_without_motion/` - fără blur/motion
+- `output/final_frames/` - cadre finale, persoana principală
+- `data/emotions/<Emoție>/` - triere finală după emoție
 
 ## Realizări tehnice cheie
 
 - Pipeline cu mai multe etape de filtrare: pre-filtrare MediaPipe, re-detecție YOLO, 3 metode de blur/motion (Laplacian, kernel, FFT pe regiunea feței)
-- EAR (Eye Aspect Ratio) pentru a evita cadrele cu ochi închiși — relevant direct pentru calitatea unui thumbnail
+- EAR (Eye Aspect Ratio) pentru a evita cadrele cu ochi închiși - relevant direct pentru calitatea unui thumbnail
 - Eficiență I/O: Decord + ThreadPool pentru extragerea rapidă a cadrelor, 1/s
 - Cod modular, separat pe responsabilități: `utils/`, `detection/`, `training/`, `predict_emotions.py`
 - Antrenare YOLO integrată în flow, configurată pe dataset-ul WIDER FACE
@@ -111,9 +111,9 @@ Pipeline-ul complet, cu toți pașii înlănțuiți, este definit în `src/main.
 
 ## Provocări
 
-- **Găsirea unui dataset potrivit** — clasificarea folosind o rețea neurală a impus FER-2013, în ciuda dezavantajelor setului de date.
-- **Performanța clasificatorului** — deși beneficiază de augmentare corespunzătoare, clasificatorul rămâne limitat din cauza lipsei unor blocuri de rețea mai complexe și a calității modeste a datelor.
-- **Ambiguitatea sentimentelor** — o consecință directă a performanței limitate a clasificatorului.
+- **Găsirea unui dataset potrivit** - clasificarea folosind o rețea neurală a impus FER-2013, în ciuda dezavantajelor setului de date.
+- **Performanța clasificatorului** - deși beneficiază de augmentare corespunzătoare, clasificatorul rămâne limitat din cauza lipsei unor blocuri de rețea mai complexe și a calității modeste a datelor.
+- **Ambiguitatea sentimentelor** - o consecință directă a performanței limitate a clasificatorului.
 
 ## Ce am învățat
 
